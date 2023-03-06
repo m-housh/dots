@@ -3,6 +3,7 @@ import Foundation
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif
+import LoggingDependency
 import XCTestDynamicOverlay
 
 /// Represents interactions with the file system.
@@ -53,8 +54,19 @@ public struct FileClient {
   
   public func createSymlink(
     source: URL,
-    destination: URL
+    destination: URL,
+    force: Bool = false
   ) async throws {
+    @Dependency(\.logger) var logger: Logger
+    let exists = try await exists(destination)
+    if exists && !force {
+      logger.info("Skipping already exists at: \(destination.absoluteString)")
+      return
+    }
+    if exists && force {
+      logger.debug("Removing existing item at: \(destination.absoluteString)")
+      try await moveToTrash(destination)
+    }
     try await self.createSymlink(source, destination)
   }
   

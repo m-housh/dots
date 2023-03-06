@@ -41,6 +41,7 @@ let package = Package(
     .target(
       name: "FileClient",
       dependencies: [
+        "LoggingDependency",
         .product(name: "Dependencies", package: "swift-dependencies"),
       ]
     ),
