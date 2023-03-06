@@ -60,10 +60,12 @@ fileprivate extension FileClient {
       .appendingPathComponent("macOS")
       .appendingPathComponent(".config")
       .appendingPathComponent("iterm")
+      .appendingPathComponent("profile.json")
   }
   
   var itermDestination: URL {
     configDirectory()
       .appendingPathComponent("iterm2")
+      .appendingPathComponent("profile.json")
   }
 }
