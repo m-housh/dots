@@ -11,6 +11,7 @@ public struct CliMiddleware {
   
   public var brew: (BrewContext) async throws -> Void
   public var git: (GitContext) async throws -> Void
+  public var install: (InstallContext) async throws -> Void
   public var iterm: (ItermContext) async throws -> Void
   public var scripts: (ScriptsContext) async throws -> Void
   public var vim: (VimContext) async throws -> Void
@@ -19,6 +20,7 @@ public struct CliMiddleware {
   public init(
     brew: @escaping (BrewContext) async throws -> Void,
     git: @escaping (GitContext) async throws -> Void,
+    install: @escaping (InstallContext) async throws -> Void,
     iterm: @escaping (ItermContext) async throws -> Void,
     scripts: @escaping (ScriptsContext) async throws -> Void,
     vim: @escaping (VimContext) async throws -> Void,
@@ -26,6 +28,7 @@ public struct CliMiddleware {
   ) {
     self.brew = brew
     self.git = git
+    self.install = install
     self.iterm = iterm
     self.scripts = scripts
     self.vim = vim
@@ -71,9 +74,16 @@ public struct CliMiddleware {
     case push
   }
   
+  public enum InstallContext: String, CaseIterable {
+    case full
+    case minimal
+  }
+  
   public enum ItermContext {
     case config(InstallationContext)
   }
+  
+  
   
   public enum ScriptsContext {
     case config(InstallationContext)
@@ -104,6 +114,7 @@ extension CliMiddleware: TestDependencyKey {
   public static let noop = Self.init(
     brew: unimplemented("\(Self.self).brew"),
     git: unimplemented("\(Self.self).git"),
+    install: unimplemented("\(Self.self).install"),
     iterm: unimplemented("\(Self.self).iterm"),
     scripts: unimplemented("\(Self.self).scripts"),
     vim: unimplemented("\(Self.self).vim"),

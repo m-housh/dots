@@ -9,6 +9,7 @@ struct Dots: AsyncParsableCommand  {
       Brew.self,
       Git.Commit.self,
       Git.self,
+      Install.self,
       Iterm.self,
       Scripts.self,
       Git.Status.self,
