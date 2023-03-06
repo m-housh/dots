@@ -18,7 +18,9 @@ struct Brew {
     for brewfile in try context.routes.brewfiles() {
       logger.info("Installing dependencies from brewfile: \(brewfile.absoluteString)")
       if !dryRun {
-        try shellClient.install(brewfile: brewfile)
+        try shellClient.tap(taps: taps)
+        try shellClient.install(brews: brews)
+//        try shellClient.install(brewfile: brewfile)
         logger.debug("Done installing dependencies from brewfile: \(brewfile.absoluteString)")
       }
     }
@@ -26,7 +28,53 @@ struct Brew {
   }
 }
 
+fileprivate let taps = [
+  "homebrew/cask",
+  "homebrew/cask-fonts",
+  "federico-terzi/espanso",
+  "m-housh/formula"
+]
+
+fileprivate let brews = [
+  "dots",
+  "espanso",
+  "fd",
+  "figlet",
+  "gh",
+  "git",
+  "httpie",
+  "jq",
+  "mas",
+  "pure",
+  "ripgrep",
+  "swift-format",
+  "swift-zet",
+  "tmux",
+  "vim",
+  "zsh",
+  "zsh-completions"
+]
+
+fileprivate let brew = "/opt/homebrew/bin/brew"
+
 extension ShellClient {
+  
+  func tap(taps: [String]) throws {
+    var arguments = [
+      brew,
+      "tap"
+    ] + taps
+    
+    try foregroundShell(arguments)
+  }
+  
+  func install(brews: [String]) throws {
+    var arguments = [
+      brew,
+      "install",
+    ] + brews
+    try foregroundShell(arguments)
+  }
   
   func install(brewfile: URL) throws {
     try foregroundShell(
