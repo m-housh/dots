@@ -19,6 +19,28 @@ public struct FileClient {
   public var moveToTrash: (URL) async throws -> Void
   public var writeFile: (Data, URL) async throws -> Void
   
+  public init(
+    configDirectory: @escaping () -> URL,
+    createDirectory: @escaping (URL, Bool) async throws -> Void,
+    createSymlink: @escaping (URL, URL) async throws -> Void,
+    dotfilesDirectory: @escaping () -> URL,
+    homeDirectory: @escaping () -> URL,
+    exists: @escaping (URL) async throws -> Bool,
+    readFile: @escaping (URL) async throws -> Data,
+    moveToTrash: @escaping (URL) async throws -> Void,
+    writeFile: @escaping (Data, URL) async throws -> Void
+  ) {
+    self.configDirectory = configDirectory
+    self.createDirectory = createDirectory
+    self.createSymlink = createSymlink
+    self.dotfilesDirectory = dotfilesDirectory
+    self.homeDirectory = homeDirectory
+    self.exists = exists
+    self.readFile = readFile
+    self.moveToTrash = moveToTrash
+    self.writeFile = writeFile
+  }
+  
   public func createDirectory(
     at url: URL,
     withIntermediates: Bool = true

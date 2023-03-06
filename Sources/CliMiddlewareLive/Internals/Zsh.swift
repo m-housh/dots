@@ -28,7 +28,9 @@ struct Zsh {
     logger.info("Linking .zshenv file to: \(destinationString)")
     
     if !dryRun {
+      logger.debug("Linking configuration.")
       try await linkZshConfig()
+      logger.debug("Creating symlink.")
       try await fileClient.createSymlink(
         source: fileClient.zshEnvSource,
         destination: destination

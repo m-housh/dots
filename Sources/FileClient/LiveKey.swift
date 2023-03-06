@@ -30,8 +30,8 @@ extension FileClient: DependencyKey {
       },
       createSymlink: { source, destination in
         try FileManager.default.createSymbolicLink(
-          at: source,
-          withDestinationURL: destination
+          at: destination,
+          withDestinationURL: source
         )
       },
       dotfilesDirectory: {
