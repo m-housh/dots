@@ -18,6 +18,7 @@ extension Dots {
     
     struct Install: AsyncParsableCommand {
       static let configuration = CommandConfiguration(
+        commandName: "install",
         abstract: "Install zsh configuration files."
       )
       
@@ -37,6 +38,7 @@ extension Dots {
     
     struct Uninstall: AsyncParsableCommand {
       static let configuration = CommandConfiguration(
+        commandName: "uninstall",
         abstract: "Uninstall zsh configuration files."
       )
       

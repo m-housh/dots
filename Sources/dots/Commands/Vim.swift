@@ -17,6 +17,7 @@ extension Dots {
     
     struct InstallConfig: AsyncParsableCommand {
       static let configuration: CommandConfiguration = .init(
+        commandName: "install",
         abstract: "Install the vim configuration."
       )
       
@@ -34,6 +35,7 @@ extension Dots {
     
     struct UninstallConfig: AsyncParsableCommand {
       static let configuration: CommandConfiguration = .init(
+        commandName: "uninstall",
         abstract: "Uninstall the vim configuration."
       )
       
