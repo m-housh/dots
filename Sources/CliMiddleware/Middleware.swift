@@ -10,29 +10,62 @@ import XCTestDynamicOverlay
 public struct CliMiddleware {
   
   public var brew: (BrewContext) async throws -> Void
+  public var espanso: (EspansoContext) async throws -> Void
   public var git: (GitContext) async throws -> Void
   public var install: (InstallContext) async throws -> Void
   public var iterm: (ItermContext) async throws -> Void
+  public var nvim: (NeoVimContext) async throws -> Void
   public var scripts: (ScriptsContext) async throws -> Void
+  public var tmux: (TmuxContext) async throws -> Void
   public var vim: (VimContext) async throws -> Void
   public var zsh: (ZshContext) async throws -> Void
   
   public init(
     brew: @escaping (BrewContext) async throws -> Void,
+    espanso: @escaping (EspansoContext) async throws -> Void,
     git: @escaping (GitContext) async throws -> Void,
     install: @escaping (InstallContext) async throws -> Void,
     iterm: @escaping (ItermContext) async throws -> Void,
+    nvim: @escaping (NeoVimContext) async throws -> Void,
     scripts: @escaping (ScriptsContext) async throws -> Void,
+    tmux: @escaping (TmuxContext) async throws -> Void,
     vim: @escaping (VimContext) async throws -> Void,
     zsh: @escaping (ZshContext) async throws -> Void
   ) {
     self.brew = brew
+    self.espanso = espanso
     self.git = git
     self.install = install
     self.iterm = iterm
+    self.nvim = nvim
     self.scripts = scripts
+    self.tmux = tmux
     self.vim = vim
     self.zsh = zsh
+  }
+  
+  public struct BrewContext {
+    public let appDir: String
+    public let routes: [Route]
+    
+    public init(
+      appDir: String,
+      routes: [Route]
+    ) {
+      self.appDir = appDir
+      self.routes = routes
+    }
+    
+    public enum Route: String, CaseIterable {
+      case all
+      case appStore
+      case brews
+      case casks
+    }
+  }
+  
+  public enum EspansoContext {
+    case config(InstallationContext)
   }
   
   public struct GlobalContext {
@@ -48,23 +81,6 @@ public struct CliMiddleware {
     case uninstall
   }
   
-  public struct BrewContext {
-    public let routes: [Route]
-    
-    public init(
-      routes: [Route]
-    ) {
-      self.routes = routes
-    }
-    
-    public enum Route: String, CaseIterable {
-      case all
-      case appStore
-      case brews
-      case casks
-    }
-  }
-  
   public enum GitContext {
     case add(file: String?)
     case config(InstallationContext)
@@ -74,18 +90,38 @@ public struct CliMiddleware {
     case push
   }
   
-  public enum InstallContext: String, CaseIterable {
-    case full
-    case minimal
+  public struct InstallContext {
+    
+    public let appDir: String
+    public let type: InstallationType
+    
+    public init(
+      appDir: String,
+      type: InstallationType
+    ) {
+      self.appDir = appDir
+      self.type = type
+    }
+    
+    public enum InstallationType: String, CaseIterable {
+      case full
+      case minimal
+    }
   }
   
   public enum ItermContext {
     case config(InstallationContext)
   }
   
-  
+  public enum NeoVimContext {
+    case config(InstallationContext)
+  }
   
   public enum ScriptsContext {
+    case config(InstallationContext)
+  }
+  
+  public enum TmuxContext {
     case config(InstallationContext)
   }
   
@@ -113,10 +149,13 @@ extension CliMiddleware: TestDependencyKey {
   
   public static let noop = Self.init(
     brew: unimplemented("\(Self.self).brew"),
+    espanso: unimplemented("\(Self.self).espanso"),
     git: unimplemented("\(Self.self).git"),
     install: unimplemented("\(Self.self).install"),
     iterm: unimplemented("\(Self.self).iterm"),
+    nvim: unimplemented("\(Self.self).nvim"),
     scripts: unimplemented("\(Self.self).scripts"),
+    tmux: unimplemented("\(Self.self).tmux"),
     vim: unimplemented("\(Self.self).vim"),
     zsh: unimplemented("\(Self.self).zsh")
   )

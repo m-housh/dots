@@ -4,28 +4,28 @@ import FileClient
 import Foundation
 import LoggingDependency
 
-extension CliMiddleware.ItermContext {
+extension CliMiddleware.NeoVimContext {
   func run() async throws {
     switch self {
     case let .config(config):
-      try await config.handleIterm()
+      try await config.handleNvim()
     }
   }
 }
 
 fileprivate extension CliMiddleware.InstallationContext {
   
-  func handleIterm() async throws {
+  func handleNvim() async throws {
     @Dependency(\.fileClient) var fileClient
     @Dependency(\.globals.dryRun) var dryRun
     @Dependency(\.logger) var logger
     
-    let destination = fileClient.itermDestination
+    let destination = fileClient.nvimDestination
     
     switch self {
     case .install:
       var prefix = "Linked"
-      let source = fileClient.itermSource
+      let source = fileClient.nvimDestination
       if !dryRun {
         logger.info("Linking iterm configuration.")
         try await fileClient.ensureConfigDirectory()
@@ -55,15 +55,13 @@ fileprivate extension CliMiddleware.InstallationContext {
 
 fileprivate extension FileClient {
   
-  var itermSource: URL {
+  var nvimSource: URL {
     dotfilesDirectory()
-      .appendingPathComponent("macOS")
-      .appendingPathComponent(".config")
-      .appendingPathComponent("iterm")
+      .appendingPathComponent("nvim")
   }
   
-  var itermDestination: URL {
+  var nvimDestination: URL {
     configDirectory()
-      .appendingPathComponent("iterm2")
+      .appendingPathComponent("nvim")
   }
 }

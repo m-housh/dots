@@ -23,6 +23,9 @@ extension Dots {
       
       @OptionGroup var globals: GlobalOptions
       
+      @Argument(help: "Customize the application directory.")
+      var appDir: String = "/Applications"
+      
       @Flag(help: "The homebrew dependencies to install from their brewfiles.")
       var routes: [CliMiddleware.BrewContext.Route] = [.all]
       
@@ -32,7 +35,7 @@ extension Dots {
           @Dependency(\.logger) var logger: Logger
           
           logger.debug("Routes: \(routes)")
-          try await brew(.init(routes: routes))
+          try await brew(.init(appDir: appDir, routes: routes))
           logger.info("Done.")
         }
         .run()

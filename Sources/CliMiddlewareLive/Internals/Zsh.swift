@@ -29,6 +29,7 @@ struct Zsh {
     
     if !dryRun {
       logger.debug("Linking configuration.")
+      try await fileClient.ensureConfigDirectory()
       try await linkZshConfig()
       logger.debug("Creating symlink.")
       try await fileClient.createSymlink(

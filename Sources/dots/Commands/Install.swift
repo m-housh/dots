@@ -14,12 +14,15 @@ extension Dots {
     @OptionGroup var globals: GlobalOptions
     
     @Flag(help: "What dependencies to install.")
-    var context: CliMiddleware.InstallContext = .minimal
+    var context: CliMiddleware.InstallContext.InstallationType = .minimal
+    
+    @Argument(help: "Customize the application directory.")
+    var appDir: String = "/Applications"
     
     func run() async throws {
       try await CliContext(globals: globals) {
         @Dependency(\.cliMiddleware.install) var install
-        try await install(context)
+        try await install(.init(appDir: appDir, type: context))
       }
       .run()
     }
@@ -27,4 +30,4 @@ extension Dots {
   }
 }
 
-extension CliMiddleware.InstallContext: EnumerableFlag { }
+extension CliMiddleware.InstallContext.InstallationType: EnumerableFlag { }

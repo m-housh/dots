@@ -6,7 +6,6 @@ import LoggingDependency
 import ShellClient
 
 struct Brew {
-  @Dependency(\.fileClient) var fileClient
   @Dependency(\.globals.dryRun) var dryRun
   @Dependency(\.logger) var logger
   @Dependency(\.shellClient) var shellClient
@@ -29,12 +28,14 @@ struct Brew {
           try shellClient.install(brews: brews)
         } else if route == .casks {
           logger.info("Install casks.")
-          try shellClient.install(casks: casks)
+          try shellClient.install(casks: casks, appDir: context.appDir)
         } else if route == .appStore {
-          let brewfile = try route.brewfile()
           logger.info("Install app store dependencies.")
-          try shellClient.install(brewfile: brewfile)
+          let apps = appStore.map(\.0)
+          try shellClient.install(apps: apps)
         }
+      } else {
+        logger.info("Dry run called, not intalling any homebrew dependencies.")
       }
     }
     logger.info("Done installing homebrew dependencies.")
@@ -50,7 +51,6 @@ fileprivate let taps = [
 
 fileprivate let brews = [
   "dots",
-  "espanso",
   "fd",
   "figlet",
   "gh",
@@ -70,6 +70,7 @@ fileprivate let brews = [
 
 fileprivate let casks = [
   "docker",
+  "espanso",
   "google-chrome",
   "iterm2",
   "onyx",
@@ -78,6 +79,13 @@ fileprivate let casks = [
 ]
 
 fileprivate let brew = "/opt/homebrew/bin/brew"
+
+fileprivate let appStore = [
+  (497799835, "Xcode"),
+  (520993579, "pwSafe"),
+  (640199958, "Developer"),
+  (1099568401, "Home Assistant")
+]
 
 extension ShellClient {
   
@@ -101,77 +109,26 @@ extension ShellClient {
     try foregroundShell(arguments)
   }
   
-  func install(casks: [String]) throws {
+  func install(casks: [String], appDir: String) throws {
     let arguments = [
       brew,
       "install",
-      "--cask"
+      "--cask",
+      "--appdir",
+      appDir,
     ] + casks
     try foregroundShell(arguments)
   }
   
-  func install(brewfile: URL) throws {
-    try foregroundShell(
-      "/opt/homebrew/bin/brew",
-      "bundle",
-      "--no-lock",
-      "--cleanup",
-      "--debug",
-      "--file",
-      brewfile.absoluteString
-    )
-  }
-}
-
-fileprivate extension FileClient {
-  var brewFileDirectory: URL {
-    dotfilesDirectory()
-      .appendingPathComponent("macOS")
-      .appendingPathComponent(".config")
-      .appendingPathComponent("macOS")
-  }
-}
-
-fileprivate extension CliMiddleware.BrewContext.Route {
-  
-  static func allBrews() throws -> [URL] {
-    let brews: [Self] = [.appStore, .brews, .casks]
-    return try brews.map { try $0.brewfile() }
-  }
-  
-  func brewfile() throws -> URL {
-    @Dependency(\.fileClient) var fileClient
-    switch self {
-    case .all:
-      // should never happen.
-      throw BrewfileError()
-    case .appStore:
-      return fileClient.brewFileDirectory.appendingPathComponent("AppStore.Brewfile")
-    case .brews:
-      return fileClient.brewFileDirectory.appendingPathComponent("Brewfile")
-    case .casks:
-      return fileClient.brewFileDirectory.appendingPathComponent("Casks.Brewfile")
+  func install(apps: [Int]) throws {
+    for app in apps {
+      let arguments = [
+        "/opt/homebrew/bin/mas",
+        "install",
+        "\(app)"
+      ]
+      try foregroundShell(arguments)
     }
   }
-}
 
-fileprivate extension Array where Element == CliMiddleware.BrewContext.Route {
- 
-  func brewfiles() throws -> [URL] {
-    
-    if self.count == 1 && self.first == .all {
-      return try CliMiddleware.BrewContext.Route.allBrews()
-    }
-    
-    var urls = [URL]()
-    for route in self {
-      if route != .all {
-        let url = try route.brewfile()
-        urls.append(url)
-      }
-    }
-    return urls
-  }
 }
-
-struct BrewfileError: Error { }
