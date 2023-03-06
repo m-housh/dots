@@ -15,13 +15,26 @@ struct Brew {
   
   func run() async throws {
     logger.info("Installing homebrew dependencies.")
-    for brewfile in try context.routes.brewfiles() {
-      logger.info("Installing dependencies from brewfile: \(brewfile.absoluteString)")
+    var routes = context.routes
+    if context.routes.contains(.all) {
+      routes = [.appStore, .brews, .casks]
+    }
+    
+    for route in routes {
       if !dryRun {
+        logger.info("Tapping brew.")
         try shellClient.tap(taps: taps)
-        try shellClient.install(brews: brews)
-//        try shellClient.install(brewfile: brewfile)
-        logger.debug("Done installing dependencies from brewfile: \(brewfile.absoluteString)")
+        if route == .brews {
+          logger.info("Install brews.")
+          try shellClient.install(brews: brews)
+        } else if route == .casks {
+          logger.info("Install casks.")
+          try shellClient.install(casks: casks)
+        } else if route == .appStore {
+          let brewfile = try route.brewfile()
+          logger.info("Install app store dependencies.")
+          try shellClient.install(brewfile: brewfile)
+        }
       }
     }
     logger.info("Done installing homebrew dependencies.")
@@ -55,6 +68,15 @@ fileprivate let brews = [
   "zsh-completions"
 ]
 
+fileprivate let casks = [
+  "docker",
+  "google-chrome",
+  "iterm2",
+  "onyx",
+  "rectangle",
+  "font-inconsolata-nerd-font"
+]
+
 fileprivate let brew = "/opt/homebrew/bin/brew"
 
 extension ShellClient {
@@ -76,6 +98,15 @@ extension ShellClient {
       brew,
       "install",
     ] + brews
+    try foregroundShell(arguments)
+  }
+  
+  func install(casks: [String]) throws {
+    let arguments = [
+      brew,
+      "install",
+      "--cask"
+    ] + casks
     try foregroundShell(arguments)
   }
   

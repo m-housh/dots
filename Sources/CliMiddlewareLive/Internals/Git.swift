@@ -47,6 +47,7 @@ fileprivate extension CliMiddleware.InstallationContext {
       if !globals.dryRun {
         logger.info("Linking git configuration.")
         logger.debug("Linking source: \(dotConfig.absoluteString) -> \(destination.absoluteString)")
+        try await fileClient.createDirectory(at: fileClient.configDirectory())
         try await fileClient.createSymlink(
           source: dotConfig,
           destination: destination
