@@ -10,13 +10,25 @@ import XCTestDynamicOverlay
 public struct CliMiddleware {
   
   public var brew: (BrewContext) async throws -> Void
+  public var git: (GitContext) async throws -> Void
+  public var iterm: (ItermContext) async throws -> Void
+  public var scripts: (ScriptsContext) async throws -> Void
+  public var vim: (VimContext) async throws -> Void
   public var zsh: (ZshContext) async throws -> Void
   
   public init(
     brew: @escaping (BrewContext) async throws -> Void,
+    git: @escaping (GitContext) async throws -> Void,
+    iterm: @escaping (ItermContext) async throws -> Void,
+    scripts: @escaping (ScriptsContext) async throws -> Void,
+    vim: @escaping (VimContext) async throws -> Void,
     zsh: @escaping (ZshContext) async throws -> Void
   ) {
     self.brew = brew
+    self.git = git
+    self.iterm = iterm
+    self.scripts = scripts
+    self.vim = vim
     self.zsh = zsh
   }
   
@@ -26,6 +38,11 @@ public struct CliMiddleware {
     public init(dryRun: Bool) {
       self.dryRun = dryRun
     }
+  }
+  
+  public enum InstallationContext {
+    case install
+    case uninstall
   }
   
   public struct BrewContext {
@@ -45,19 +62,30 @@ public struct CliMiddleware {
     }
   }
   
+  public enum GitContext {
+    case config(InstallationContext)
+  }
+  
+  public enum ItermContext {
+    case config(InstallationContext)
+  }
+  
+  public enum ScriptsContext {
+    case config(InstallationContext)
+  }
+  
+  public enum VimContext {
+    case config(InstallationContext)
+  }
+  
   public struct ZshContext {
     
-    public let context: Context
+    public let context: InstallationContext
     
     public init(
-      context: Context
+      context: InstallationContext
     ) {
       self.context = context
-    }
-    
-    public enum Context {
-      case install
-      case uninstall
     }
   }
 }
@@ -70,6 +98,10 @@ extension CliMiddleware: TestDependencyKey {
   
   public static let noop = Self.init(
     brew: unimplemented("\(Self.self).brew"),
+    git: unimplemented("\(Self.self).git"),
+    iterm: unimplemented("\(Self.self).iterm"),
+    scripts: unimplemented("\(Self.self).scripts"),
+    vim: unimplemented("\(Self.self).vim"),
     zsh: unimplemented("\(Self.self).zsh")
   )
   

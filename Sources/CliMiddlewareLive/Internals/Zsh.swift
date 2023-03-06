@@ -35,6 +35,7 @@ struct Zsh {
         source: fileClient.zshEnvSource,
         destination: destination
       )
+      logger.info("You will need to reload your shell environment for changes to take effect.")
     }
     logger.info("Done installing zsh configuration files.")
   }
