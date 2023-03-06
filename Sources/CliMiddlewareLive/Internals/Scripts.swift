@@ -64,7 +64,7 @@ fileprivate extension FileClient {
   }
   
   var scriptsDirectory: URL {
-    configDirectory()
+    dotfilesDirectory()
       .appendingPathComponent("scripts")
       .appendingPathComponent("scripts")
   }
