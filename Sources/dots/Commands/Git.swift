@@ -25,13 +25,19 @@ extension Dots {
         abstract: "Add a file to the git repository, or all the files if not supplied."
       )
       
-      @Argument(transform: URL.init(string:))
-      var file: URL?
+      @Argument(
+        help: "Files to start tracking in git."
+      )
+      var files: [String] = []
       
       func run() async throws {
         try await CliContext {
           @Dependency(\.cliMiddleware.git) var git
-          try await git(.add(file: file?.absoluteString))
+          var files = self.files.count == 0
+            ? nil
+            : self.files
+          
+          try await git(.add(files: files))
         }
         .run()
       }

@@ -10,10 +10,10 @@ extension CliMiddleware.GitContext {
     @Dependency(\.shellClient) var shellClient
     
     switch self {
-    case let .add(file: file):
+    case let .add(files: files):
       var arguments = ["git", "add"]
-      if let file {
-        arguments.append(file)
+      if let files {
+        arguments += files
       } else {
         arguments.append("--all")
       }

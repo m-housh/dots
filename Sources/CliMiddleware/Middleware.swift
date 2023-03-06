@@ -82,7 +82,7 @@ public struct CliMiddleware {
   }
   
   public enum GitContext {
-    case add(file: String?)
+    case add(files: [String]?)
     case config(InstallationContext)
     case status
     case commit(message: String)
