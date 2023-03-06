@@ -7,9 +7,13 @@ struct Dots: AsyncParsableCommand  {
     version: VERSION ?? "0.0.0",
     subcommands: [
       Brew.self,
+      Git.Commit.self,
       Git.self,
       Iterm.self,
       Scripts.self,
+      Git.Status.self,
+      Git.Pull.self,
+      Git.Push.self,
       Vim.self,
       Zsh.self
     ]

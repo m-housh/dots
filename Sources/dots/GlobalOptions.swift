@@ -21,4 +21,8 @@ extension CliMiddleware.GlobalContext {
   static func live(_ globalOptions: GlobalOptions) -> Self {
     .init(dryRun: globalOptions.dryRun)
   }
+  
+  static var liveValue: Self {
+    .init(dryRun: false)
+  }
 }

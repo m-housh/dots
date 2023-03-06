@@ -3,12 +3,31 @@ import Dependencies
 import FileClient
 import Foundation
 import LoggingDependency
+import ShellClient
 
 extension CliMiddleware.GitContext {
   func run() async throws {
+    @Dependency(\.shellClient) var shellClient
+    
     switch self {
+    case let .add(file: file):
+      var arguments = ["git", "add"]
+      if let file {
+        arguments.append(file)
+      } else {
+        arguments.append("--all")
+      }
+      try shellClient.runInDotfilesDirectory(arguments)
     case let .config(config):
       try await config.handleGit()
+    case .status:
+      try shellClient.runInDotfilesDirectory("git", "status")
+    case .commit(message: let message):
+      try shellClient.runInDotfilesDirectory("git", "commit", "-a", "-m", message)
+    case .pull:
+      try shellClient.runInDotfilesDirectory("git", "pull")
+    case .push:
+      try shellClient.runInDotfilesDirectory("git", "push", "--tags")
     }
   }
 }
