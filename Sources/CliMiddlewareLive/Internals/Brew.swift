@@ -60,16 +60,19 @@ fileprivate let brew = "/opt/homebrew/bin/brew"
 extension ShellClient {
   
   func tap(taps: [String]) throws {
-    var arguments = [
+    let arguments = [
       brew,
       "tap"
-    ] + taps
+    ]
     
-    try foregroundShell(arguments)
+    for tap in taps {
+      try foregroundShell(arguments + [tap])
+    }
+    
   }
   
   func install(brews: [String]) throws {
-    var arguments = [
+    let arguments = [
       brew,
       "install",
     ] + brews
