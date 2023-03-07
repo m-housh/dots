@@ -18,6 +18,7 @@ extension ShellClient: DependencyKey {
         let task = Process()
         task.launchPath = "/usr/bin/env"
         task.arguments = arguments
+        task.environment = ProcessInfo.processInfo.environment
         task.launch()
         task.waitUntilExit()
         
@@ -32,6 +33,7 @@ extension ShellClient: DependencyKey {
         let task = Process()
         task.launchPath = "/usr/bin/env"
         task.arguments = arguments
+        task.environment = ProcessInfo.processInfo.environment
         // grab stdout
         let output = Pipe()
         task.standardOutput = output
