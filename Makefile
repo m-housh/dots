@@ -5,9 +5,9 @@ LIBDIR = $(PREFIX)/lib
 
 bottle:
 	swift run -c release bottle
-	
+
 build:
-	swift run -c release build
+	swift run -c release --disable-sandbox build
 
 install: build
 	install -d "$(BINDIR)" "$(LIBDIR)"
