@@ -60,7 +60,7 @@ fileprivate struct BottleRunner {
     )
     
     // create a branch in the formula repository.
-    try createBranch()
+//    try createBranch()
     
     // Update the formula for bottling.
     try await updateFormulaBeforeBottling()
