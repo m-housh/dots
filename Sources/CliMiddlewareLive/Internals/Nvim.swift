@@ -3,6 +3,7 @@ import Dependencies
 import FileClient
 import Foundation
 import LoggingDependency
+import ShellClient
 
 extension CliMiddleware.NeoVimContext {
   func run() async throws {
@@ -19,6 +20,7 @@ fileprivate extension CliMiddleware.InstallationContext {
     @Dependency(\.fileClient) var fileClient
     @Dependency(\.globals.dryRun) var dryRun
     @Dependency(\.logger) var logger
+    @Dependency(\.shellClient) var shellClient
     
     let destination = fileClient.nvimDestination
     
@@ -33,12 +35,15 @@ fileprivate extension CliMiddleware.InstallationContext {
           source: source,
           destination: destination
         )
+        try shellClient.install(brews: [.neovim])
       } else {
-        prefix = "Would have linked"
         logger.info("Dry run called")
+        prefix = "Would have linked"
       }
       logger.info("\(prefix): \(source.absoluteString) -> \(destination.absoluteString)")
-      logger.info("You will need to open iterm prefrences and load the profile.")
+      if !dryRun {
+        logger.info("You will need to open iterm prefrences and load the profile.")
+      }
     case .uninstall:
       var prefix: String = "Moved"
       if !dryRun {
