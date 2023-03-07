@@ -80,7 +80,6 @@ fileprivate struct BottleRunner {
     
     // Upload bottle to github release.
     try uploadBottleToRelease(fileName: bottleOutput.fileName)
-    defer { try? FileManager.default.removeItem(atPath: bottleOutput.fileName) }
     
     // Update the formula with the new bottle block.
     logger.info("Updating formula.")
