@@ -20,32 +20,18 @@ fileprivate extension CliMiddleware.InstallationContext {
     @Dependency(\.globals.dryRun) var dryRun
     @Dependency(\.logger) var logger
     
-    let destination = fileClient.tmuxDestination
-    
     switch self {
     case .install:
-      var prefix = "Linked"
-      let source = fileClient.tmuxSource
-      if !dryRun {
-        logger.info("Linking iterm configuration.")
-        try await fileClient.createSymlink(
-          source: source,
-          destination: destination
-        )
-      } else {
-        prefix = "Would have linked"
-        logger.info("Dry run called")
-      }
-      logger.info("\(prefix): \(source.absoluteString) -> \(destination.absoluteString)")
+      logger.info("Installing tmux configuration.")
+      try await fileClient.install(
+        source: \.tmuxSource,
+        destination: \.tmuxDestination,
+        dryRun: dryRun,
+        ensureConfigDirectory: false
+      )
     case .uninstall:
-      var prefix: String = "Moved"
-      if !dryRun {
-        logger.info("Removing iterm configuration symlink.")
-        try await fileClient.moveToTrash(destination)
-      } else {
-        prefix = "Would have moved"
-      }
-      logger.info("\(prefix): \(destination.absoluteString) to the trash.")
+      logger.info("Uninstalling tmux configuration.")
+      try await fileClient.uninstall(destination: \.tmuxDestination, dryRun: dryRun)
     }
   }
  

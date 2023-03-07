@@ -5,7 +5,13 @@ import Foundation
 import LoggingDependency
 import ShellClient
 
-struct Brew {
+extension CliMiddleware.BrewContext {
+  func run() async throws {
+    try await BrewRunner(context: self).run()
+  }
+}
+
+fileprivate struct BrewRunner {
   @Dependency(\.globals.dryRun) var dryRun
   @Dependency(\.logger) var logger
   @Dependency(\.shellClient) var shellClient
@@ -27,7 +33,7 @@ struct Brew {
         switch route {
         case .brews:
           logger.info("Install brews.")
-          try shellClient.install(brews: Brews.allCases)
+          try shellClient.install(brews: Brew.allCases)
         case .casks:
           logger.info("Install casks.")
           try shellClient.install(casks: Cask.allCases, appDir: context.appDir)
@@ -47,7 +53,7 @@ struct Brew {
         switch route {
         case .brews:
           logger.info("Would install brews:")
-          logger.info("\t\(Brews.allCases.map(\.rawValue).joined(separator: "\n\t"))")
+          logger.info("\t\(Brew.allCases.map(\.rawValue).joined(separator: "\n\t"))")
         case .casks:
           logger.info("Would install casks:")
           logger.info("\t\(Cask.allCases.map(\.rawValue).joined(separator: "\n\t"))")
@@ -73,7 +79,7 @@ internal enum Tap: String, CaseIterable {
   case mhoush = "m-housh/formula"
 }
 
-internal enum Brews: String, CaseIterable {
+internal enum Brew: String, CaseIterable {
   case dots
   case fd
   case figlet
@@ -142,7 +148,7 @@ internal extension ShellClient {
     
   }
   
-  func install(brews: [Brews]) throws {
+  func install(brews: [Brew]) throws {
     let arguments = [
       brew,
       "install",

@@ -19,40 +19,26 @@ fileprivate extension CliMiddleware.InstallationContext {
   
   func handleScripts() async throws {
     @Dependency(\.fileClient) var fileClient
-    @Dependency(\.globals) var globals
+    @Dependency(\.globals.dryRun) var dryRun
     @Dependency(\.logger) var logger
     
-    let destination = fileClient.scriptsDestination
-    
     switch self {
-      
     case .install:
-      let source = fileClient.scriptsDirectory
-      var prefix = "Linked"
+      logger.info("Installing scripts.")
       
-      if !globals.dryRun {
-        logger.info("Linking scripts.")
-        logger.debug("Linking scripts: \(source.absoluteString) -> \(destination.absoluteString)")
+      if !dryRun {
+        // Create a directory at ~/.local if it doesn't exist.
         try await fileClient.createDirectory(
           at: fileClient.homeDirectory().appendingPathComponent(".local")
         )
-        try await fileClient.createSymlink(
-          source: source,
-          destination: destination
-        )
-      } else {
-        prefix = "Would have linked"
       }
-      logger.info("\(prefix): \(source.absoluteString) -> \(destination.absoluteString)")
+      try await fileClient.install(
+        source: \.scriptsDirectory,
+        destination: \.scriptsDestination,
+        dryRun: dryRun
+      )
     case .uninstall:
-      var prefix = "Moved"
-      if !globals.dryRun {
-        logger.info("Removing scripts symlink.")
-        try await fileClient.moveToTrash(destination)
-      } else {
-        prefix = "Would have moved"
-      }
-      logger.info("\(prefix): \(destination.absoluteString) to the trash.")
+      try await fileClient.uninstall(destination: \.scriptsDestination, dryRun: dryRun)
     }
   }
 }

@@ -22,37 +22,20 @@ fileprivate extension CliMiddleware.InstallationContext {
     @Dependency(\.logger) var logger
     @Dependency(\.shellClient) var shellClient
     
-    let destination = fileClient.nvimDestination
-    
     switch self {
     case .install:
-      var prefix = "Linked"
-      let source = fileClient.nvimDestination
-      if !dryRun {
-        logger.info("Linking iterm configuration.")
-        try await fileClient.ensureConfigDirectory()
-        try await fileClient.createSymlink(
-          source: source,
-          destination: destination
-        )
-        try shellClient.install(brews: [.neovim])
-      } else {
-        logger.info("Dry run called")
-        prefix = "Would have linked"
-      }
-      logger.info("\(prefix): \(source.absoluteString) -> \(destination.absoluteString)")
+      logger.info("Installing neovim configuration.")
+      try await fileClient.install(
+        source: \.nvimSource,
+        destination: \.nvimDestination,
+        dryRun: dryRun
+      )
       if !dryRun {
         logger.info("You will need to open iterm prefrences and load the profile.")
       }
     case .uninstall:
-      var prefix: String = "Moved"
-      if !dryRun {
-        logger.info("Removing iterm configuration symlink.")
-        try await fileClient.moveToTrash(destination)
-      } else {
-        prefix = "Would have moved"
-      }
-      logger.info("\(prefix): \(destination.absoluteString) to the trash.")
+      logger.info("Uninstalling neovim configuration.")
+      try await fileClient.uninstall(destination: \.nvimDestination, dryRun: dryRun)
     }
   }
  

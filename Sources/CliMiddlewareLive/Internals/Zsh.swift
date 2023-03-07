@@ -8,7 +8,14 @@ import LoggingDependency
 import FoundationNetworking
 #endif
 
-struct Zsh {
+extension CliMiddleware.ZshContext {
+  
+  func run() async throws {
+    try await Zsh(context: self).run()
+  }
+}
+
+fileprivate struct Zsh {
   @Dependency(\.globals.dryRun) var dryRun
   @Dependency(\.fileClient) var fileClient
   @Dependency(\.logger) var logger
@@ -16,40 +23,30 @@ struct Zsh {
   let context: CliMiddleware.ZshContext
   
   func install() async throws {
-    let configString = fileClient.zshConfigDestination.absoluteString
-      .replacingOccurrences(of: "file://", with: "")
-    
-    let destination = fileClient.zshEnvDestination
-    
-    let destinationString = destination.absoluteString
-      .replacingOccurrences(of: "file://", with: "")
-    
-    logger.info("Linking zsh configuration to: \(configString)")
-    logger.info("Linking .zshenv file to: \(destinationString)")
-    
+    logger.info("Installing zsh configuration.")
+    try await fileClient.install(
+      source: \.zshDirectory,
+      destination: \.zshConfigDestination,
+      dryRun: dryRun
+    )
+    try await fileClient.install(
+      source: \.zshEnvSource,
+      destination: \.zshEnvDestination,
+      dryRun: dryRun,
+      ensureConfigDirectory: false
+    )
     if !dryRun {
-      logger.debug("Linking configuration.")
-      try await fileClient.ensureConfigDirectory()
-      try await linkZshConfig()
-      logger.debug("Creating symlink.")
-      try await fileClient.createSymlink(
-        source: fileClient.zshEnvSource,
-        destination: destination
-      )
       logger.info("You will need to reload your shell environment for changes to take effect.")
     }
-    logger.info("Done installing zsh configuration files.")
   }
   
   func uninstall() async throws {
-    logger.info("Uninstalling zsh configuration from: \(fileClient.zshConfigDestination.absoluteString)")
+    logger.info("Uninstalling zsh configuration.")
+    try await fileClient.uninstall(destination: \.zshEnvDestination, dryRun: dryRun)
+    try await fileClient.uninstall(destination: \.zshConfigDestination, dryRun: dryRun)
     if !dryRun {
-      logger.debug("Moving configuration to the trash.")
-      try await fileClient.moveToTrash(fileClient.zshConfigDestination)
-      logger.debug("Moving .zshenv to the trash.")
-      try await fileClient.moveToTrash(fileClient.zshEnvDestination)
+      logger.info("Done uninstalling zsh configuration, you will need to reload your shell.")
     }
-    logger.info("Done uninstalling zsh configuration, you will need to reload your shell.")
   }
   
   func run() async throws {

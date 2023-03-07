@@ -36,36 +36,20 @@ fileprivate extension CliMiddleware.InstallationContext {
   
   func handleGit() async throws {
     @Dependency(\.fileClient) var fileClient
-    @Dependency(\.globals) var globals
+    @Dependency(\.globals.dryRun) var dryRun
     @Dependency(\.logger) var logger
     
-    let dotConfig = fileClient.gitConfigDirectory
-    let destination = fileClient.gitConfigDestination
     switch self {
-      
     case .install:
-      if !globals.dryRun {
-        logger.info("Linking git configuration.")
-        logger.debug("Linking source: \(dotConfig.absoluteString) -> \(destination.absoluteString)")
-        try await fileClient.createDirectory(at: fileClient.configDirectory())
-        try await fileClient.createSymlink(
-          source: dotConfig,
-          destination: destination
-        )
-        logger.info("Done linking configuration to: \(destination.absoluteString)")
-      } else {
-        logger.info("Dry run called")
-        logger.info("Would link source: \(dotConfig.absoluteString) -> \(destination.absoluteString)")
-      }
+      logger.info("Installing git configuration.")
+      try await fileClient.install(
+        source: \.gitConfigDirectory,
+        destination: \.gitConfigDestination,
+        dryRun: dryRun
+      )
     case .uninstall:
-      var prefix: String = "Moved"
-      if !globals.dryRun {
-        logger.info("Removing git configuration symlink.")
-        try await fileClient.moveToTrash(destination)
-      } else {
-        prefix = "Would have moved"
-      }
-      logger.info("\(prefix): \(destination.absoluteString) to the trash.")
+      logger.info("Uninstalling git configuration.")
+      try await fileClient.uninstall(destination: \.gitConfigDestination, dryRun: dryRun)
     }
   }
  

@@ -20,31 +20,24 @@ fileprivate extension CliMiddleware.InstallationContext {
     @Dependency(\.globals.dryRun) var dryRun
     @Dependency(\.logger) var logger
     
-    let destination = fileClient.vimrcDestination
-    
     switch self {
     case .install:
-      var prefix = "Linked"
-      let source = fileClient.vimrcSource
-      
+      logger.info("Installing vim configuration.")
       if !dryRun {
-        logger.info("Installing vim configuration.")
         try await fileClient.createDirectory(at: fileClient.vimDirectory)
-        try await fileClient.createSymlink(source: source, destination: destination)
-      } else {
-        prefix = "Would have linked"
       }
-      logger.info("\(prefix): \(source.absoluteString) -> \(destination.absoluteString)")
-      logger.info("You will need to start vim for plugins to load.")
-    case .uninstall:
-      var prefix = "Moved"
+      try await fileClient.install(
+        source: \.vimrcSource,
+        destination: \.vimrcDestination,
+        dryRun: dryRun,
+        ensureConfigDirectory: false
+      )
       if !dryRun {
-        logger.info("Removing vim configuration.")
-        try await fileClient.moveToTrash(destination)
-      } else {
-        prefix = "Would have moved"
+        logger.info("You will need to start vim for plugins to load.")
       }
-      logger.info("\(prefix): \(destination.absoluteString) to the trash.")
+    case .uninstall:
+      logger.info("Uninstalling vim configuration.")
+      try await fileClient.uninstall(destination: \.vimrcDestination, dryRun: dryRun)
     }
   }
 }

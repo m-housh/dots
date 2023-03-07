@@ -12,34 +12,17 @@ extension CliMiddleware.EspansoContext {
     
     switch self {
     case let .config(config):
-      
-      let destination = fileClient.espansoDestination
-      
       switch config {
       case .install:
-        var prefix = "Linked"
-        let source = fileClient.espansoSource
-        if !dryRun {
-          logger.info("Installing espanso configuration.")
-          try await fileClient.ensureConfigDirectory()
-          try await fileClient.createSymlink(
-            source: source,
-            destination: destination
-          )
-        } else {
-          prefix = "Would have linked"
-        }
-        logger.info("\(prefix): \(source.absoluteString) -> \(destination.absoluteString)")
-        
+        logger.info("Installing espanso configuration.")
+        try await fileClient.install(
+          source: \.espansoSource,
+          destination: \.espansoDestination,
+          dryRun: dryRun
+        )
       case .uninstall:
-        var prefix = "Moved"
-        if !dryRun {
-          logger.info("Removing espanso configuration.")
-          try await fileClient.moveToTrash(destination)
-        } else {
-          prefix = "Would have moved"
-        }
-        logger.info("\(prefix): \(destination.absoluteString)")
+        logger.info("Uninstalling espanso configuration.")
+        try await fileClient.uninstall(destination: \.espansoDestination, dryRun: false)
       }
     }
   }
