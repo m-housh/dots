@@ -28,7 +28,7 @@ fileprivate extension CliMiddleware.InstallationContext {
       let source = fileClient.itermSource
       if !dryRun {
         logger.info("Linking iterm configuration.")
-        try await fileClient.ensureConfigDirectory()
+        try await fileClient.ensureItermConfigDirectory()
         try await fileClient.createSymlink(
           source: source,
           destination: destination
@@ -67,5 +67,12 @@ fileprivate extension FileClient {
     configDirectory()
       .appendingPathComponent("iterm2")
       .appendingPathComponent("profile.json")
+  }
+  
+  func ensureItermConfigDirectory() async throws {
+    try await ensureConfigDirectory()
+    try await createDirectory(
+      at: configDirectory().appendingPathComponent("iterm2")
+    )
   }
 }
