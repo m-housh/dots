@@ -76,10 +76,10 @@ fileprivate struct BottleRunner {
     
     // Fix the bottle tarball name.
     logger.info("Fixing bottle tarball name.")
-    try updateBottleFilePath(fileName: bottleOutput.fileName)
+    let bottlePath = try updateBottleFilePath(fileName: bottleOutput.fileName)
     
     // Upload bottle to github release.
-    try uploadBottleToRelease(fileName: bottleOutput.fileName)
+    try uploadBottleToRelease(fileName: bottlePath)
     
     // Update the formula with the new bottle block.
     logger.info("Updating formula.")
@@ -138,9 +138,10 @@ fileprivate struct BottleRunner {
     return parseBottleOutput(from: bottleContext)
   }
  
-  private func updateBottleFilePath(fileName: String) throws {
+  private func updateBottleFilePath(fileName: String) throws -> String {
     let sanitizedName = fileName.replacingOccurrences(of: "--", with: "-")
     try FileManager.default.moveItem(atPath: fileName, toPath: sanitizedName)
+    return sanitizedName
   }
   
   private func uploadBottleToRelease(fileName: String) throws {
