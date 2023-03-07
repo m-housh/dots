@@ -26,7 +26,7 @@ extension ShellClient: DependencyKey {
           throw ShellError(terminationStatus: task.terminationStatus)
         }
       },
-      backgroundShell: { arguments in
+      backgroundShellData: { arguments in
         logger.debug("Running background shell.")
         logger.debug("$ \(arguments.joined(separator: " "))")
         
@@ -47,13 +47,12 @@ extension ShellClient: DependencyKey {
           throw ShellError(terminationStatus: task.terminationStatus)
         }
         
-        return String(decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
-          .trimmingCharacters(in: .whitespacesAndNewlines)
+        return output.fileHandleForReading.readDataToEndOfFile()
         
       }
     )
   }
-  
+
 }
 
 struct ShellError: Swift.Error {

@@ -26,6 +26,7 @@ let package = Package(
     .executableTarget(
       name: "builder",
       dependencies: [
+        "FileClient",
         "LoggingDependency",
         "ShellClient",
         .product(name: "ArgumentParser", package: "swift-argument-parser")

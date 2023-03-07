@@ -11,6 +11,7 @@ extension Dots {
       subcommands: [
         Add.self,
         Commit.self,
+        CommitAllAndPush.self,
         InstallConfig.self,
         Status.self,
         Pull.self,
@@ -55,6 +56,24 @@ extension Dots {
         try await CliContext {
           @Dependency(\.cliMiddleware.git) var git
           try await git(.commit(message: message))
+        }
+        .run()
+      }
+    }
+    
+    struct CommitAllAndPush: AsyncParsableCommand {
+      static let configuration = CommandConfiguration(
+        commandName: "commit-all",
+        abstract: "Commit and push the dotfiles."
+      )
+      
+      @Argument
+      var message: String
+      
+      func run() async throws {
+        try await CliContext {
+          @Dependency(\.cliMiddleware.git) var git
+          try await git(.commitAllAndPush(message: message))
         }
         .run()
       }

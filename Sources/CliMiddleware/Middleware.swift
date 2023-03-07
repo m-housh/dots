@@ -86,6 +86,7 @@ public struct CliMiddleware {
     case config(InstallationContext)
     case status
     case commit(message: String)
+    case commitAllAndPush(message: String)
     case pull
     case push
   }

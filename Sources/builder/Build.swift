@@ -6,13 +6,13 @@ import ShellClient
 
 extension Builder {
   
-  struct Build: ParsableCommand {
+  struct Build: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
       commandName: "build",
       abstract: "Build the `dots` application."
     )
     
-    func run() throws {
+    func run() async throws {
       @Dependency(\.shellClient) var shellClient: ShellClient
       @Dependency(\.logger) var logger: Logger
       

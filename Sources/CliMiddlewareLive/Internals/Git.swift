@@ -24,6 +24,10 @@ extension CliMiddleware.GitContext {
       try shellClient.runInDotfilesDirectory("git", "status")
     case .commit(message: let message):
       try shellClient.runInDotfilesDirectory("git", "commit", "-a", "-m", message)
+    case .commitAllAndPush(message: let message):
+      try await Self.add(files: nil).run()
+      try await Self.commit(message: message).run()
+      try await Self.push.run()
     case .pull:
       try shellClient.runInDotfilesDirectory("git", "pull")
     case .push:
