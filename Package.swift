@@ -8,8 +8,7 @@ let package = Package(
     .macOS(.v12)
   ],
   products: [
-    .executable(name: "bottle", targets: ["bottle"]),
-    .executable(name: "build", targets: ["build"]),
+    .executable(name: "builder", targets: ["builder"]),
     .executable(name: "dots", targets: ["dots"]),
     .library(name: "CliMiddleware", targets: ["CliMiddleware"]),
     .library(name: "CliMiddlewareLive", targets: ["CliMiddlewareLive"]),
@@ -25,16 +24,11 @@ let package = Package(
   ],
   targets: [
     .executableTarget(
-      name: "bottle",
+      name: "builder",
       dependencies: [
+        "LoggingDependency",
         "ShellClient",
-        "LoggingDependency"
-      ]
-    ),
-    .executableTarget(
-      name: "build",
-      dependencies: [
-        "ShellClient"
+        .product(name: "ArgumentParser", package: "swift-argument-parser")
       ]
     ),
     .target(

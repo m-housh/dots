@@ -6,18 +6,23 @@ BOTTLE = "$(shell ls *.gz)"
 VERSION = "$(shell dots --version)"
 
 bottle:
-	swift run -c release bottle
+	swift run -c release builder bottle
 	$(MAKE) update-bottle-name
+	@echo "Run `make upload-bottle`, once you've updated the formula"
 
 update-bottle-name:
 	$(shell source "./scripts/update-bottle-name.sh")
-	echo "Updated bottle name"
+	@echo "Updated bottle name"
 
 upload-bottle:
 	gh release upload "$(VERSION)" "$(BOTTLE)"
+	$(MAKE) remove-bottle
+	
+remove-bottle:
+	rm -rf "$(BOTTLE)"
 
 build:
-	swift run -c release --disable-sandbox build
+	swift run -c release --disable-sandbox builder build
 
 install: build
 	install -d "$(BINDIR)" "$(LIBDIR)"
