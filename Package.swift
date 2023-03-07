@@ -1,6 +1,5 @@
 // swift-tools-version: 5.7
 
-
 import PackageDescription
 
 let package = Package(
@@ -23,6 +22,19 @@ let package = Package(
     .package(url: "https://github.com/adorkable/swift-log-format-and-pipe.git", from: "0.1.0"),
   ],
   targets: [
+    .executableTarget(
+      name: "bottle",
+      dependencies: [
+        "ShellClient",
+        "LoggingDependency"
+      ]
+    ),
+    .executableTarget(
+      name: "build",
+      dependencies: [
+        "ShellClient"
+      ]
+    ),
     .target(
       name: "CliMiddleware",
       dependencies: [

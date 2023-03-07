@@ -3,10 +3,11 @@ BINDIR = $(PREFIX)/bin
 COMPLETIONDIR = $(PREFIX)/completions
 LIBDIR = $(PREFIX)/lib
 
+bottle:
+	swift run -c release bottle
+	
 build:
-	swiftc ./scripts/build.swift
-	./build
-	rm ./build
+	swift run -c release build
 
 install: build
 	install -d "$(BINDIR)" "$(LIBDIR)"
@@ -16,3 +17,5 @@ uninstall:
 	rm "$(BINDIR)/dots"
 	rm "$(COMPLETIONDIR)/_dots"
 
+clean:
+	rm -rf ./.build

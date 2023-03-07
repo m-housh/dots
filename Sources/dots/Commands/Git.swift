@@ -33,7 +33,7 @@ extension Dots {
       func run() async throws {
         try await CliContext {
           @Dependency(\.cliMiddleware.git) var git
-          var files = self.files.count == 0
+          let files = self.files.count == 0
             ? nil
             : self.files
           

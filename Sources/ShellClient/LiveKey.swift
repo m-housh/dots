@@ -46,7 +46,7 @@ extension ShellClient: DependencyKey {
         }
         
         return String(decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
-          .trimmingCharacters(in: .whitespacesAndNewlines)
+//          .trimmingCharacters(in: .whitespacesAndNewlines)
         
       }
     )
