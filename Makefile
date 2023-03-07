@@ -8,7 +8,7 @@ VERSION = "$(shell dots --version)"
 bottle:
 	swift run -c release builder bottle
 	$(MAKE) update-bottle-name
-	@echo "Run `make upload-bottle`, once you've updated the formula"
+	@echo "Run 'make upload-bottle', once you've updated the formula"
 
 update-bottle-name:
 	$(shell source "./scripts/update-bottle-name.sh")
