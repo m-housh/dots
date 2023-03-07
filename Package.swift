@@ -8,6 +8,8 @@ let package = Package(
     .macOS(.v12)
   ],
   products: [
+    .executable(name: "bottle", targets: ["bottle"]),
+    .executable(name: "build", targets: ["build"]),
     .executable(name: "dots", targets: ["dots"]),
     .library(name: "CliMiddleware", targets: ["CliMiddleware"]),
     .library(name: "CliMiddlewareLive", targets: ["CliMiddlewareLive"]),
