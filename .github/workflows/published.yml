@@ -1,0 +1,20 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  bottle:
+    name: Bottle
+    runs-on: macOS-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Homebrew
+        run: brew install gh
+      - name: Bottle
+        run: make bottle
+        env:
+          GITHUB_TOKEN: ${{ secrets.FORMULA_REPO_TOKEN }}
