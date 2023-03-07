@@ -27,7 +27,7 @@ extension CliMiddleware.GitContext {
     case .pull:
       try shellClient.runInDotfilesDirectory("git", "pull")
     case .push:
-      try shellClient.runInDotfilesDirectory("git", "push", "--tags")
+      try shellClient.runInDotfilesDirectory("git", "push")
     }
   }
 }
