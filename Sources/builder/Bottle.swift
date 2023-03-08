@@ -59,9 +59,6 @@ fileprivate struct BottleRunner {
       brew, "tap", "\(tap)"
     )
     
-    // create a branch in the formula repository.
-//    try createBranch()
-    
     // Update the formula for bottling.
     try await updateFormulaBeforeBottling()
     
@@ -83,6 +80,9 @@ fileprivate struct BottleRunner {
     
     // Update the formula with the new bottle block.
     logger.info("Updating formula.")
+    #warning("This needs to update a bottle do block in the existing file")
+    // Some bottles are generated in the ci/cd workflow and so those portions of
+    // of the bottle do block needs to remain.
     try await updateFormulaAfterBottling(bottleBlock: bottleOutput.bottleBlock)
     
     // Check the formula does not contain formula syntax errors.
@@ -90,6 +90,9 @@ fileprivate struct BottleRunner {
     
     // Commit the updated formula.
     try commitFormulaRepository()
+    
+    // Create a branch with the new formula before creating a pull request.
+    try createBranch()
     
     // Create a pull request for the formula repository.
     try createPullRequest()
@@ -188,7 +191,7 @@ fileprivate struct BottleRunner {
     if commitable {
       logger.info("Creating pull request for the formula repository.")
       try shellClient.runInFormulaRepository(
-        "gh", "pr", "create", "--fill", "--base", "main"
+        "gh", "pr", "create", "--fill", "--base", "main", "--repo", "m-housh/homebrew-formula"
       )
     }
   }
