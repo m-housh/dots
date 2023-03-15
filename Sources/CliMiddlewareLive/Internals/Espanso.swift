@@ -2,7 +2,7 @@ import CliMiddleware
 import Dependencies
 import FileClient
 import Foundation
-import LoggingDependency
+import ShellClient
 
 extension CliMiddleware.EspansoContext {
   func run() async throws {

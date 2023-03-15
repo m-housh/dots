@@ -2,7 +2,7 @@ import CliMiddleware
 import Dependencies
 import FileClient
 import Foundation
-import LoggingDependency
+import ShellClient
 
 extension CliMiddleware.ItermContext {
   func run() async throws {

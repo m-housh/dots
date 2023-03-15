@@ -2,7 +2,7 @@ import ArgumentParser
 import CliMiddleware
 import Dependencies
 import Foundation
-import LoggingDependency
+import ShellClient
 
 extension Dots {
   struct Zsh: AsyncParsableCommand {

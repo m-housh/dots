@@ -1,7 +1,6 @@
 import ArgumentParser
 import Dependencies
 import Foundation
-import LoggingDependency
 import ShellClient
 
 extension Builder {
@@ -34,12 +33,12 @@ extension Builder {
       }
       
       try withVersion(in: "Sources/dots/Version.swift", as: shellClient.currentVersion()) {
-        try shellClient.foregroundShell(
+        try shellClient.foreground([
           "swift", "build",
           "--disable-sandbox",
           "--configuration", "release",
           "-Xswiftc", "-cross-module-optimization"
-        )
+        ])
       }
     }
   }

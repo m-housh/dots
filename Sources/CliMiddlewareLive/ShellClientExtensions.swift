@@ -15,6 +15,6 @@ extension ShellClient {
     FileManager.default
       .changeCurrentDirectoryPath(fileClient.dotfilesDirectory().absoluteString)
     
-    try self.foregroundShell(arguments)
+    try self.foreground(.init(arguments))
   }
 }

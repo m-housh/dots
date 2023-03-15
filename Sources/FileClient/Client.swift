@@ -3,7 +3,7 @@ import Foundation
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif
-import LoggingDependency
+import ShellClient
 import XCTestDynamicOverlay
 
 /// Represents interactions with the file system.

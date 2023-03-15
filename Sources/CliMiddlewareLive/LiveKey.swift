@@ -1,7 +1,6 @@
 import Dependencies
 @_exported import CliMiddleware
 @_exported import FileClient
-@_exported import LoggingDependency
 @_exported import ShellClient
 import Foundation
 

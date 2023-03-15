@@ -2,7 +2,7 @@ import CliMiddleware
 import Dependencies
 import FileClient
 import Foundation
-import LoggingDependency
+import ShellClient
 
 extension CliMiddleware.TmuxContext {
   func run() async throws {

@@ -2,7 +2,6 @@ import Dependencies
 import CliMiddleware
 import FileClient
 import Foundation
-import LoggingDependency
 import ShellClient
 
 extension CliMiddleware.BrewContext {
@@ -143,7 +142,7 @@ internal extension ShellClient {
     
     // taps have to be done one at a time.
     for tap in taps {
-      try foregroundShell(arguments + [tap.rawValue])
+      try foreground(.init(arguments + [tap.rawValue]))
     }
     
   }
@@ -153,7 +152,7 @@ internal extension ShellClient {
       brew,
       "install",
     ] + brews.map(\.rawValue)
-    try foregroundShell(arguments)
+    try foreground(.init(arguments))
   }
   
   func install(casks: [Cask], appDir: String) throws {
@@ -164,7 +163,7 @@ internal extension ShellClient {
       "--appdir",
       appDir,
     ] + casks.map(\.rawValue)
-    try foregroundShell(arguments)
+    try foreground(.init(arguments))
   }
   
   func install(apps: [Int]) throws {
@@ -174,7 +173,7 @@ internal extension ShellClient {
         "install",
         "\(app)"
       ]
-      try foregroundShell(arguments)
+      try foreground(.init(arguments))
     }
   }
 

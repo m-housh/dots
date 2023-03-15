@@ -2,7 +2,6 @@ import ArgumentParser
 import Dependencies
 import FileClient
 import Foundation
-import LoggingDependency
 import ShellClient
 
 extension Builder {
@@ -55,8 +54,8 @@ fileprivate struct BottleRunner {
     logger.info("Tapping: \(tap)")
     
     // tap
-    try shellClient.foregroundShell(
-      brew, "tap", "\(tap)"
+    try shellClient.foreground(
+      [brew, "tap", "\(tap)"]
     )
     
     // Update the formula for bottling.
@@ -64,8 +63,8 @@ fileprivate struct BottleRunner {
     
     // install and prepair to bottle.
     logger.info("Installing: \(fullFormula)")
-    try shellClient.foregroundShell(
-      brew, "install", "--build-bottle", fullFormula
+    try shellClient.foreground(
+      [brew, "install", "--build-bottle", fullFormula]
     )
     
     // bottle
@@ -77,10 +76,11 @@ fileprivate struct BottleRunner {
     
     // Upload bottle to github release.
     try uploadBottleToRelease(fileName: bottlePath)
+    defer { try? FileManager.default.trashItem(at: URL(fileURLWithPath: bottlePath), resultingItemURL: nil) }
     
     // Update the formula with the new bottle block.
     logger.info("Updating formula.")
-    #warning("This needs to update a bottle do block in the existing file")
+    
     // Some bottles are generated in the ci/cd workflow and so those portions of
     // of the bottle do block needs to remain.
     try await updateFormulaAfterBottling(bottleBlock: bottleOutput.bottleBlock)
@@ -102,8 +102,9 @@ fileprivate struct BottleRunner {
   // MARK: - Helpers
   
   private func uninstallFormula() {
-    _ = try? shellClient.backgroundShell(
-      brew, "uninstall", fullFormula
+    _ = try? shellClient.background(
+      [brew, "uninstall", fullFormula],
+      trimmingCharactersIn: .whitespacesAndNewlines
     )
   }
   
@@ -132,8 +133,9 @@ fileprivate struct BottleRunner {
   }
   
   private func bottle() throws -> ParsedOutput {
-    let bottleContext = try shellClient.backgroundShell(
-      brew, "bottle", "--root-url", rootUrl, fullFormula
+    let bottleContext = try shellClient.background(
+      [brew, "bottle", "--root-url", rootUrl, fullFormula],
+      trimmingCharactersIn: .whitespacesAndNewlines
     )
     // print the bottling output to act like a foreground shell.
     logger.info("\(bottleContext)")
@@ -150,8 +152,8 @@ fileprivate struct BottleRunner {
   private func uploadBottleToRelease(fileName: String) throws {
     if commitable {
       logger.info("Uploading bottle as a release asset.")
-      try shellClient.foregroundShell(
-        "gh", "release", "upload", version, fileName
+      try shellClient.foreground(
+        ["gh", "release", "upload", version, fileName]
       )
     }
   }
@@ -171,8 +173,8 @@ fileprivate struct BottleRunner {
   private func checkFormula() throws {
     if commitable {
       logger.info("Checking new formula for syntax errors.")
-      _ = try shellClient.backgroundShell(
-        brew, "audit", "--strict", "--new-formula", "--online", fullFormula
+      _ = try shellClient.background(
+        [brew, "audit", "--strict", "--new-formula", "--online", fullFormula]
       )
       logger.info("Passed.")
     }
@@ -228,8 +230,9 @@ fileprivate extension FileClient {
 
 fileprivate extension ShellClient {
   func formulaRepositoryPath() throws -> String {
-    try self.backgroundShell(
-      "brew", "--repository", "m-housh/formula"
+    try self.background(
+      ["brew", "--repository", "m-housh/formula"],
+      trimmingCharactersIn: .whitespacesAndNewlines
     )
   }
   
@@ -243,7 +246,7 @@ fileprivate extension ShellClient {
   func runInFormulaRepository(_ arguments: String...) throws {
     let repo = try formulaRepositoryPath()
     FileManager.default.changeCurrentDirectoryPath(repo)
-    try self.foregroundShell(arguments)
+    try self.foreground(.init(arguments))
   }
 }
 

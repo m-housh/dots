@@ -2,7 +2,7 @@ import CliMiddleware
 import Dependencies
 import FileClient
 import Foundation
-import LoggingDependency
+import ShellClient
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
