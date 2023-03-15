@@ -33,14 +33,13 @@ fileprivate struct BottleRunner {
   private var fullFormula: String { "\(tap)/\(formula)" }
   private var rootUrl: String { "https://github.com/m-housh/dots/releases/download/\(version)" }
   private var tap: String { "m-housh/formula" }
-  private var version: String { try! shellClient.currentVersion() }
+  private var version: String { VERSION }
   private var commitable: Bool {
     !dryRun && !(version.contains("main"))
   }
   
   func run() async throws {
-    let version = try shellClient.currentVersion()
-    
+
     logger.info("Starting bottle process.")
     logger.info("""
       DryRun: \(dryRun)

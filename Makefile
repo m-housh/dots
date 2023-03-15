@@ -6,7 +6,7 @@ BOTTLE = "$(shell ls *.gz)"
 VERSION = "$(shell dots --version)"
 
 bottle:
-	swift run -c release builder bottle
+	swift run --configuration release --disable-sandbox builder bottle
 	@echo "Run 'make upload-bottle', once you've updated the formula"
 
 # Remove.
@@ -22,7 +22,7 @@ remove-bottle:
 	rm -rf "$(BOTTLE)"
 
 build:
-	swift run -c release --disable-sandbox builder build
+	swift run --configuration release --disable-sandbox builder build
 
 install: build
 	install -d "$(BINDIR)" "$(LIBDIR)"

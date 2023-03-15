@@ -27,6 +27,9 @@ let package = Package(
         "FileClient",
         .product(name: "ShellClient", package: "swift-shell-client"),
         .product(name: "ArgumentParser", package: "swift-argument-parser")
+      ],
+      plugins: [
+        .plugin(name: "BuildWithVersionPlugin", package: "swift-cli-version")
       ]
     ),
     .target(
